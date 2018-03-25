@@ -1,0 +1,23 @@
+<component identifier="b.myHull">
+<size>
+<triple x="6.000000" y="4.000000" z="3.000000"/>
+</size>
+<socket>
+<triple x="0.000000" y="0.000000" z="-1.500000"/>
+</socket>
+<connections>
+<mount>
+<component identifier="b.myTurret">
+<size>
+<triple x="2.000000" y="2.000000" z="1.000000"/>
+</size>
+<socket>
+<triple x="0.000000" y="0.000000" z="-0.500000"/>
+</socket>
+</component>
+<ball>
+<triple x="-1.000000" y="0.000000" z="1.500000"/>
+</ball>
+</mount>
+</connections>
+</component>

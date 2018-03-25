@@ -1,0 +1,8 @@
+temp 1 = 314519.000000
+ bits = 19
+ shift = 0
+temp 2 = 3.145000
+ bits = 19
+ shift = 3
+java.lang.RuntimeException: Not the same configuration for addition
+THe error from RandomWalk = 4334345.5

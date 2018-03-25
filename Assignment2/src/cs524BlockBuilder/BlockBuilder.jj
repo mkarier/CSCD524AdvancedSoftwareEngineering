@@ -1,0 +1,182 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = false;
+}
+
+PARSER_BEGIN(BlockBuilder)
+package cs524BlockBuilder;
+import cs524BlockBuilder.Block;
+
+public class BlockBuilder
+{
+  public String fileIn;
+
+  public String fileOut;
+  BlockBuilder(String fileIn, String fileOut)
+  {
+    this.fileIn = fileIn;
+    this.fileOut = fileOut;
+  }
+
+  public static void main(String args []) throws ParseException
+  {
+    if (args.length < 2)
+    {
+      throw new RuntimeException("not enough arguments");
+    }
+    try
+    {
+      BlockBuilder compiler = new BlockBuilder(args [1], args [2]);
+      compiler.parse();
+      //Block.printXML(a, args [2]);
+      //Block.exportToGnuplot(a, Triple(0, 0, 0));
+    }
+    catch (Throwable e)
+    {
+      System.out.println("NOK.");
+      System.out.println(e.getMessage());
+    }
+  }
+}
+
+PARSER_END(BlockBuilder)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+TOKEN : /* OPERATORS */
+{
+  < ASSIGN : "=" >
+| < COLON : ":" >
+| < COMMA : "," >
+| < LBRACE : "{" >
+| < RBRACE : "}" >
+| < LBRACKET : "[" >
+| < RBRACKET : "]" >
+| < LPAREN : "(" >
+| < RPAREN : ")" >
+| < SEMICOLON : ";" >
+| < SQUOTE : "'" >
+| < DQUOTE : "\"" >
+}
+
+TOKEN : // identifiers
+{
+  < IDENTIFIER :
+    < LETTER >
+    (
+      < LETTER >
+    | < DIGIT >
+    )* >
+| < #LETTER : [ "a"-"z", "A"-"Z", "_" ] >
+| < #DIGIT : [ "0"-"9" ] >
+}
+
+TOKEN : //Special words
+{
+  < DEFINE : "define" >
+| < SOCKET : "socket" >
+| < ID : "id" >
+| < VOLUME : "volume" >
+| < CONNECT : "connectsTo" >
+| < BALL : "at" >
+}
+
+public void parse() :
+{
+  Block a;
+}
+{ //startof parser method
+  (
+    < DEFINE > 
+    < ASSIGN > 
+    a = define() 
+    < SEMICOLON >
+    {
+      Block.printXML(a, this.fileOut);
+      Block.exportToGnuplot(a, new Triple(0, 0, 0));
+    }
+  )*
+  < EOF >
+} //end of parser method
+
+public Block define() :
+{
+  Block a = new Block();
+  Block b = new Block();
+  Triple volume = new Triple();
+  Triple socket = new Triple();
+  Triple ball = new Triple();
+  String id = "";
+}
+{
+  < LPAREN > 
+  < ID > 
+  < ASSIGN > 
+  < DQUOTE >
+  {
+    id = token.image;
+  }
+  < DQUOTE > 
+  < VOLUME > 
+  < ASSIGN >
+  {
+    volume = getTriple();
+  }
+  < SOCKET > 
+  < ASSIGN >
+  {
+    socket = getTriple();
+    a = new Block(id, volume, socket);
+  }
+  [
+    < CONNECT > 
+    < LPAREN >
+    {
+      b = define();
+      a.connectsTo(b);
+    }
+    < BALL >
+    {
+      ball = getTriple();
+    }
+    < RPAREN >
+  ]
+  < RPAREN >
+  {
+    return a;
+  }
+} //end of define()
+
+public Triple getTriple() :
+{
+  double x;
+  double y;
+  double z;
+}
+{
+  < LBRACKET >
+  {	
+    x = Double.parseDouble(token.image);
+  }
+  < COMMA >
+  {
+    y = Double.parseDouble(token.image);
+  }
+  < COMMA >
+  {
+    z = Double.parseDouble(token.image);
+  }
+  < RBRACKET >
+  {
+    return new Triple(x, y, z);
+  }
+} //end of getTriple
